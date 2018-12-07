@@ -64,6 +64,14 @@ class CartList extends Component<CartListProps> {
                             </tr> );
 
             result = ( <table className="cart">
+                            <thead>
+                                <tr>
+                                    <th className="cart-name">Product</th>
+                                    <th className="cart-price">Price</th>
+                                    <th className="cart-remove-button">&nbsp;</th>
+                                    <th className="cart-instructions">Special Instructions</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 { items }
                                 { total }

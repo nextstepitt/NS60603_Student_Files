@@ -111,18 +111,19 @@ td.list-add-button {
 table.cart {
     border: none;
     min-width: 700px;
+    margin-bottom: 5px;
 }
 
 th.cart-name, td.cart-name {
     min-width: 450px;
 }
 
-th.list-price, td.list-price {
+th.list-price, td.list-price, th.cart-price, td.cart-price {
     width: 200px;
     text-align: right;
 }
 
-th.cart-price {
+th.list-price, th.cart-price, th.cart-instructions {
     font-variant: small-caps;
 }
 
@@ -132,7 +133,6 @@ th.cart-instructions {
 
 td.cart-remove-button {
     min-width: 8em;
-    text-align: right;
 }
 
 /* Styles for the menu and navigation buttons */

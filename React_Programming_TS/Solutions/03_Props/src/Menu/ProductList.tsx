@@ -28,7 +28,7 @@ class ProductList extends Component<ProductListProps> {
                     <thead>
                         <tr>
                             <th className="list-name"></th>
-                            <th className="list-price">price</th>
+                            <th className="list-price">Price</th>
                         </tr>
                     </thead>
                     <tbody>
