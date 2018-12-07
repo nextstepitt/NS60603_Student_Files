@@ -1,4 +1,4 @@
-// cart.ts
+// Cart.ts
 // Copyright © NextStep IT Training. All rights reserved.
 //
 // Return a singleton shopping cart for the application facets to share.
@@ -9,8 +9,11 @@ import CartEntry from './CartEntry';
 class Cart {
 
     public entries: CartEntry[] = new Array<CartEntry>();
+    private entryIdentity = 0;
 
     public constructor(source?: Cart) {
+
+        // Shallow clonse of the properies of this class, for purposes of immutable state.
 
         if (source) {
 
@@ -20,6 +23,7 @@ class Cart {
 
     public add(entry: CartEntry): void {
 
+        entry.id = ++this.entryIdentity;
         this.entries.push(entry);
     }
 

@@ -1,50 +1,52 @@
-// productReducer.ts
+// ProductReducer.ts
 // Copyright © NextStep IT Training. All rights Reserved.
 //
 
-import ModelAction, { SET_BEVERAGES_ACTION, SET_BEVERAGES_ERROR_ACTION, SET_PASTRIES_ACTION, SET_PASTRIES_ERROR_ACTION } from './ModelAction'
+import { AnyAction } from 'redux';
+import ModelAction, { ProductActionType } from './ModelAction';
+import ModelState from './ModelState';
 import Product from '../Data-Access/Product';
 import Products from './Products';
 
 class ProductReducer {
 
-    constructor() {
+    public constructor() {
 
         this.reduce = this.reduce.bind(this)
     }
 
-    reduce(state: Products, action: ModelAction) {
+    public reduce(state: Products | undefined, action: AnyAction): Products {
 
-        let result = state ? state : new Products();
+        let resultState: Products = state ? state : new Products();
 
         switch (action.type) {
 
-            case SET_BEVERAGES_ACTION:
-                result = this.reduceBeverages(result, action.data);
+            case ProductActionType.SET_BEVERAGES_ACTION:
+                resultState = this.reduceBeverages(state, action.payload);
                 break;
 
-            case SET_BEVERAGES_ERROR_ACTION:
-                result = this.reduceBeveragesError(result);
+            case ProductActionType.SET_BEVERAGES_ERROR_ACTION:
+                resultState = this.reduceBeveragesError(state);
                 break;
 
-            case SET_PASTRIES_ACTION:
-                result = this.reducePastries(result, action.data);
+            case ProductActionType.SET_PASTRIES_ACTION:
+                resultState = this.reducePastries(state, action.payload);
                 break;
 
-            case SET_PASTRIES_ERROR_ACTION:
-                result = this.reducePastriesError(result);
+            case ProductActionType.SET_PASTRIES_ERROR_ACTION:
+                resultState = this.reducePastriesError(state);
                 break;
 
             default:
                 break;
         }
 
-        return result;
+        return resultState;
     }
 
-    public reduceBeverages(state: Products, beverages: Array<Product>): Products {
+    private reduceBeverages(state: Products | undefined, beverages: Array<Product>): Products {
 
-        let result = { ...state };
+        let result = new Products(state);
 
         result.beverages = beverages;
         result.beveragesError = false;
@@ -52,9 +54,9 @@ class ProductReducer {
         return result;
     }
 
-    reduceBeveragesError(state: Products) {
+    private reduceBeveragesError(state: Products | undefined): Products {
 
-        let result = { ...state };
+        let result = new Products(state);
 
         result.beverages = [];
         result.beveragesError = true;
@@ -62,9 +64,9 @@ class ProductReducer {
         return result;
     }
 
-    reducePastries(state: Products, pastries: Array<Product>) {
+    private reducePastries(state: Products | undefined, pastries: Array<Product>): Products {
 
-        let result = { ...state };
+        let result = new Products(state);
 
         result.pastries = pastries;
         result.pastriesError = false;
@@ -72,15 +74,15 @@ class ProductReducer {
         return result;
     }
 
-    reducePastriesError(state: Products) {
+    private reducePastriesError(state: Products | undefined): Products {
  
-        let result = { ...state };
+        let result = new Products(state);
 
-        result.pastries = [];
+        result.pastries = new Array<Product>();
         result.pastriesError = false;
 
         return result;
     }
 }
 
-export default (new ProductReducer()).reduce;
+export default ProductReducer;

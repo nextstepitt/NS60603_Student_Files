@@ -8,30 +8,30 @@
 import { Dispatch } from 'redux';
 
 import CartEntry from '../Cart/CartEntry';
-import ModelAction, { ADD_CART_ITEM_ACTION, CLEAR_CART_ITEMS_ACTION, REMOVE_CART_ITEM_ACTION } from './ModelAction';
+import ModelAction, { CartActionType, createModelAction } from './ModelAction';
 
 class CartActionCreator {
 
-    private dispatch: Dispatch;
+    private dispatch: Dispatch<ModelAction>;
 
-    public constructor(dispatch: Dispatch) {
+    public constructor(dispatch: Dispatch<ModelAction>) {
 
         this.dispatch = dispatch;
     }
 
     public addCartEntry(entry: CartEntry): void {
 
-        this.dispatch(new ModelAction(ADD_CART_ITEM_ACTION, entry));
+        this.dispatch(createModelAction(CartActionType.ADD_CART_ITEM_ACTION, entry));
     }
 
     public clearCart(): void {
 
-        this.dispatch(new ModelAction(CLEAR_CART_ITEMS_ACTION));
+        this.dispatch(createModelAction(CartActionType.CLEAR_CART_ITEMS_ACTION));
     }
 
     public removeCartEntry(entry: CartEntry): void {
 
-        this.dispatch(new ModelAction(REMOVE_CART_ITEM_ACTION, entry));
+        this.dispatch(createModelAction(CartActionType.REMOVE_CART_ITEM_ACTION, entry));
     }
 }
 

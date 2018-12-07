@@ -1,17 +1,34 @@
+// App.tsx
+// Copyright © NextStep IT Training. All rights reserved.
+//
+
 import React, { Component, ReactNode } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import '../Assets/styles/application.css';
 import Main from './Main';
-import model from '../Model/model';
+import ModelStoreController from '../Model/ModelStoreController';
 
-class App extends Component {
+interface AppProps {
+
+}
+
+class App extends Component<AppProps> {
+
+    private modelStoreController: ModelStoreController;
+
+    public constructor(props: AppProps) {
+
+        super(props);
+
+        this.modelStoreController = new ModelStoreController();
+    }
 
     public render(): ReactNode {
 
         return (
-            <Provider store={ model.store }>
+            <Provider store={ this.modelStoreController.store }>
                 <Router>
                     <Main />
                 </Router>

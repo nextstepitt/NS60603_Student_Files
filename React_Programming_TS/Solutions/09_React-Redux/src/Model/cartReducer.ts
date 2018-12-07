@@ -1,44 +1,45 @@
-// ordertReducer.js
+// CartReducer.ts
 // Copyright © NextStep IT Training. All rights reserved.
 //
 
-import ModelAction, { ADD_CART_ITEM_ACTION, CLEAR_CART_ITEMS_ACTION, REMOVE_CART_ITEM_ACTION } from './ModelAction';
+import { AnyAction } from 'redux';
+import ModelAction, { CartActionType } from './ModelAction';
 import Cart from '../Cart/Cart';
 import CartEntry from '../Cart/CartEntry';
 
 class CartReducer {
 
-    constructor() {
+    public constructor() {
 
         this.reduce = this.reduce.bind(this)
     }
 
-    reduce(state: Cart, action: ModelAction): Cart {
+    public reduce(state: Cart | undefined, action: AnyAction): Cart {
 
-        let result: Cart | null = state ? state : new Cart(null);
+        let resultState: Cart = state ? state : new Cart();
 
         switch (action.type) {
 
-            case ADD_CART_ITEM_ACTION:
-                result = this.reduceNewEntry(result, action.data);
+            case CartActionType.ADD_CART_ITEM_ACTION:
+                resultState = this.reduceNewEntry(state, action.payload);
                 break;
 
-            case CLEAR_CART_ITEMS_ACTION:
-                result = this.reduceClearEntries(result);
+            case CartActionType.CLEAR_CART_ITEMS_ACTION:
+                resultState = this.reduceClearEntries(state);
                 break;
             
-            case REMOVE_CART_ITEM_ACTION:
-                result = this.reduceRemoveEntry(result, action.data);
+            case CartActionType.REMOVE_CART_ITEM_ACTION:
+                resultState = this.reduceRemoveEntry(state, action.payload);
                 break;
 
             default:
                 break;
         }
 
-        return result;
+        return resultState;
     }
 
-    private reduceNewEntry(state: Cart, entry: CartEntry): Cart {
+    private reduceNewEntry(state: Cart | undefined, entry: CartEntry): Cart {
 
         let result = new Cart(state);
 
@@ -47,7 +48,7 @@ class CartReducer {
         return result;
     }
 
-    private reduceClearEntries(state: Cart): Cart {
+    private reduceClearEntries(state: Cart | undefined): Cart {
 
         let result = new Cart(state);
 
@@ -56,7 +57,7 @@ class CartReducer {
         return result;
     }
 
-    private reduceRemoveEntry(state: Cart, entry: CartEntry): Cart {
+    private reduceRemoveEntry(state: Cart | undefined, entry: CartEntry): Cart {
 
         let result = new Cart(state);
 
@@ -66,4 +67,4 @@ class CartReducer {
     }
 }
 
-export default (new CartReducer()).reduce;
+export default CartReducer;

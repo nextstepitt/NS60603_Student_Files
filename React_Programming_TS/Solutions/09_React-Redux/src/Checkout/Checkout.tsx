@@ -11,10 +11,12 @@ import { Link, withRouter } from 'react-router-dom';
 import '../Assets/styles/application.css';
 import CartActionCreator from '../Model/CartActionCreator';
 import CartList from './CartList';
+import Cart from '../Cart/Cart';
 
 interface CheckoutProps {
 
-    cartData?: CartActionCreator;
+    cart?: Cart;
+    cartAction?: CartActionCreator;
 }
 
 class CheckoutState {
@@ -43,6 +45,32 @@ class Checkout extends Component<CheckoutProps, CheckoutState> {
         this.checkout = this.checkout.bind(this)
     }
 
+    public checkout(props: any): void {
+
+        if (this.isValid()) {
+
+            this.props.cartAction && this.props.cartAction.clearCart();
+            props.history.push("/Menu")
+        }
+
+        this.setState({ error: true });
+    }
+
+    public componentDidMount(): void {
+
+        this.setValidState();
+    }
+
+    public componentDidUpdate(props: CheckoutProps, state: CheckoutState): void {
+
+        this.setValidState();
+    }
+
+    public isValid(): boolean {
+
+        return this.state.cardNumberIsValid && this.state.nameIsValid;
+    }
+
     public static mapStateToProps(state: any): any {
 
         return {
@@ -55,8 +83,28 @@ class Checkout extends Component<CheckoutProps, CheckoutState> {
 
         return {
 
-            cartData: new CartActionCreator(dispatch)
+            cartAction: new CartActionCreator(dispatch)
         }
+    }
+
+    public onCardNumberInvalid(): void {
+
+        this.cardNumberIsValid = false;
+     }
+
+    public onChangeCardNumber(event: FormEvent<HTMLInputElement>): void {
+
+        this.setState({ cardNumber: event.currentTarget.value });
+    }
+
+    public onChangeName(event: FormEvent<HTMLInputElement>): void {
+
+        this.setState({ name: event.currentTarget.value });
+    }
+
+    public onNameInvalid(): void {
+
+        this.nameIsValid = false
     }
 
     public render(): ReactNode {
@@ -64,7 +112,7 @@ class Checkout extends Component<CheckoutProps, CheckoutState> {
         this.cardNumberIsValid = true;
         this.nameIsValid = true;
 
-        let SubmitButton = cart.entries.length && this.isValid() ? withRouter( (props) => <input type="button" value="Submit" onClick={ () => this.checkout(props) } /> ) : () => null;
+        let SubmitButton = this.props.cart && this.props.cart.entries.length && this.isValid() ? withRouter( (props) => <input type="button" value="Submit" onClick={ () => this.checkout(props) } /> ) : () => null;
 
         return (
             <div>
@@ -96,52 +144,6 @@ class Checkout extends Component<CheckoutProps, CheckoutState> {
                 </form>
             </div>
         );
-    }
-
-    public checkout(props: any): void {
-
-        if (this.isValid()) {
-
-            this.props.cartData && this.props.cartData.clearCart();
-            props.history.push("/Menu")
-        }
-
-        this.setState({ error: true });
-    }
-
-    public componentDidMount(): void {
-
-        this.setValidState();
-    }
-
-    public componentDidUpdate(props: CheckoutProps, state: CheckoutState): void {
-
-        this.setValidState();
-    }
-
-    public isValid(): boolean {
-
-        return this.state.cardNumberIsValid && this.state.nameIsValid;
-    }
-
-    public onCardNumberInvalid(): void {
-
-        this.cardNumberIsValid = false;
-     }
-
-    public onChangeCardNumber(event: FormEvent<HTMLInputElement>): void {
-
-        this.setState({ cardNumber: event.currentTarget.value });
-    }
-
-    public onChangeName(event: FormEvent<HTMLInputElement>): void {
-
-        this.setState({ name: event.currentTarget.value });
-    }
-
-    public onNameInvalid(): void {
-
-        this.nameIsValid = false
     }
 
     public setValidState(): void {

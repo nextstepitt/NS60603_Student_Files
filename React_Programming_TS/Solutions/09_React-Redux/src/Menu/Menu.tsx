@@ -13,28 +13,32 @@ import '../Assets/styles/application.css';
 import CartActionCreator from '../Model/CartActionCreator';
 import CartEntry from '../Cart/CartEntry';
 import CartList from '../Checkout/CartList';
+import ModelState from '../Model/ModelState';
 import Product from '../Data-Access/Product';
 import ProductActionCreator from '../Model/ProductActionCreator';
 import ProductList from './ProductList';
 import dataContext from '../Data-Access/dataContext';
+import Cart from '../Cart/Cart';
 
 interface MenuProps {
 
-    cartData?: CartActionCreator;
-    productsData?: ProductActionCreator;
+    beverages: Product[];
+    beveragesError: boolean;
+    cart?: Cart;
+    cartAction?: CartActionCreator;
+    pastries: Product[];
+    pastriesError: boolean;
+    productAction?: ProductActionCreator;
 }
 
 class MenuState {
 
-    public beverages: Product[] = Array<Product>();
-    public beveragesError: boolean = false;
     public item: Product | null = null;
-    public pastries: Product[] = Array<Product>();
-    public pastriesError: boolean = false;
     public showSpecialInstructions: boolean = false;
     public specialInstructions: string = '';
 }
 
+// @connect(mapStateToProps, mapDispatchToProps)
 class Menu extends Component<MenuProps, MenuState> {
 
     public readonly state = new MenuState();
@@ -47,41 +51,6 @@ class Menu extends Component<MenuProps, MenuState> {
         this.cancelAddToCart = this.cancelAddToCart.bind(this);
         this.changeSpecialInstructions = this.changeSpecialInstructions.bind(this);
         this.commitAddToCart = this.commitAddToCart.bind(this);
-
-        this.loadBeverages();
-        this.loadPastries();
-    }
-
-    public async loadBeverages(): Promise<void> {
-
-        try {
-        
-            const beverages = await dataContext.beverageContext.getBeverages();
-
-            this.setState({ beverages: beverages, beveragesError: false });
-        }
-
-        catch (error) {
-            
-            console.log(error);
-            this.setState({ pastries: [], beveragesError: true });
-        }
-    }
-
-    public async loadPastries(): Promise<void> {
-
-        try {
-        
-            const pastries = await dataContext.pastryContext.getPastries();
-
-            this.setState({ pastries: pastries, pastriesError: false });
-        }
-
-        catch (error) {
-            
-            console.log(error);
-            this.setState({ pastries: [], pastriesError: true });
-        }
     }
 
     public addToCart(item: Product): void {
@@ -101,21 +70,27 @@ class Menu extends Component<MenuProps, MenuState> {
 
     public commitAddToCart(): void {
 
-        if (this.state.item) {
+        if (this.props.cartAction && this.state.item) {
 
-            this.props.cartData && this.props.cartData.addCartEntry(new CartEntry({ name: this.state.item.name, price: this.state.item.price, instructions: this.state.specialInstructions }))
+            this.props.cartAction.addCartEntry(new CartEntry({ name: this.state.item.name, price: this.state.item.price, instructions: this.state.specialInstructions }))
             this.setState({ showSpecialInstructions: false, specialInstructions: '' })
         }
     }
 
-    public static mapStateToProps(state: any, ownProps: any): any {
+    public componentDidMount(): void {
+
+        this.props.productAction!.getBeverages();
+        this.props.productAction!.getPastries();
+    }
+
+    public static mapStateToProps(state: ModelState, ownProps: any): any {
 
         return {
 
-            beverages: state.product.beverages,
-            beveragesError: state.product.beveragesError,
-            pastries: state.product.pastries,
-            pastriesError: state.product.pastriesError,
+            beverages: state.products.beverages,
+            beveragesError: state.products.beveragesError,
+            pastries: state.products.pastries,
+            pastriesError: state.products.pastriesError,
             cart: state.cart
         }
     }
@@ -124,8 +99,8 @@ class Menu extends Component<MenuProps, MenuState> {
 
         return {
 
-            cartData: new CartActionCreator(dispatch),
-            productData: new ProductActionCreator(dispatch)
+            cartAction: new CartActionCreator(dispatch),
+            productAction: new ProductActionCreator(dispatch)
         }
     }
 
@@ -143,11 +118,11 @@ class Menu extends Component<MenuProps, MenuState> {
                     </div>
                 </div>
                 <h1>Menu</h1>
-                <ProductList title="Beverages" products={ this.state.beverages } error={ this.state.beveragesError } addToCart={ this.addToCart } />
-                <ProductList title="Pastries" products={ this.state.pastries } error={ this.state.pastriesError } addToCart={ this.addToCart } />
+                <ProductList title="Beverages" products={ this.props.beverages } error={ this.props.beveragesError } addToCart={ this.addToCart } />
+                <ProductList title="Pastries" products={ this.props.pastries } error={ this.props.pastriesError } addToCart={ this.addToCart } />
                 <h2>Cart</h2>
                 <CartList />
-                { cart.entries.length ? <Link to="/checkout"><button>Checkout</button></Link> : null }
+                { this.props.cart && this.props.cart.entries.length ? <Link to="/checkout"><button>Checkout</button></Link> : null }
             </div>
         );
     }

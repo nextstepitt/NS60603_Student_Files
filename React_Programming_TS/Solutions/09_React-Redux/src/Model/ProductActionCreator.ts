@@ -1,4 +1,4 @@
-// ProductActionCreator.js
+// ProductActionCreator.ts
 // Copyright © NextStep IT Training. All rights reserved.
 //
 // THe action-creator for the production actions. Because of the asynchronouse nature of the actions, instead of bindActionCreators
@@ -8,13 +8,13 @@
 import { Dispatch } from 'redux';
 
 import dataContext from '../Data-Access/dataContext';
-import ModelAction, { SET_BEVERAGES_ACTION, SET_BEVERAGES_ERROR_ACTION, SET_PASTRIES_ACTION, SET_PASTRIES_ERROR_ACTION } from './ModelAction';
+import ModelAction, { ProductActionType, createModelAction } from './ModelAction';
 
-export default class ProductActionCreator {
+class ProductActionCreator {
 
-    private dispatch: Dispatch;
+    private dispatch: Dispatch<ModelAction>;
 
-    constructor(dispatch: Dispatch) {
+    constructor(dispatch: Dispatch<ModelAction>) {
 
         this.dispatch = dispatch;
     }
@@ -25,29 +25,31 @@ export default class ProductActionCreator {
 
             const beverages = await dataContext.beverageContext.getBeverages();
 
-            this.dispatch(new ModelAction(SET_BEVERAGES_ACTION, beverages));
+            this.dispatch(createModelAction(ProductActionType.SET_BEVERAGES_ACTION, beverages));
         }
 
         catch (error) {
 
             console.log(error)
-            this.dispatch(new ModelAction(SET_BEVERAGES_ERROR_ACTION));
+            this.dispatch(createModelAction(ProductActionType.SET_BEVERAGES_ERROR_ACTION));
         }
     }
 
-    getPastries() {
+    public async getPastries(): Promise<void> {
 
         try {
 
             const pastries = await dataContext.pastryContext.getPastries();
 
-            this.dispatch(new ModelAction(SET_PASTRIES_ACTION, pastries));
+            this.dispatch(createModelAction(ProductActionType.SET_PASTRIES_ACTION, pastries));
         }
 
         catch (error) {
 
             console.log(error)
-            this.dispatch(new ModelAction(SET_PASTRIES_ERROR_ACTION));
+            this.dispatch(createModelAction(ProductActionType.SET_PASTRIES_ERROR_ACTION));
         }
     }
 }
+
+export default ProductActionCreator;
